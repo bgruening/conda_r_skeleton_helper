@@ -20,11 +20,9 @@ for fn in `cat packages.txt`; do
     sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' $fn/bld.bat
     sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' $fn/meta.yaml
     sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' $fn/build.sh
-    if grep -lvq "extra:" $fn/meta.yaml ; then  cat extra.yaml >> $fn/meta.yaml ; fi
-    perl -i -ne 'print if ! $last == $_; $last = $_' $fn/meta.yaml
+    cat extra.yaml >> $fn/meta.yaml
     gedit $fn/meta.yaml
     diff -u $fn/meta.yaml tmp/$fn.meta.yaml > tmp/$fn.meta.diff
-
 done
 
 
