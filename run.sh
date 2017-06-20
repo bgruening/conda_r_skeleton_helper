@@ -12,7 +12,7 @@ for fn in `cat packages.txt`; do
     sed -i '/^$/{N;/^\n$/d;}' $fn/meta.yaml
     sed -i '/^$/{N;/^\n$/d;}' $fn/build.sh
     sed -i 's/ + file LICENSE//' $fn/meta.yaml
-    sed -i 's/ \| file LICENSE//' $fn/meta.yaml
+    sed -i 's/ | file LICENSE//' $fn/meta.yaml
     if grep -lq "\- gcc"  $fn/meta.yaml ; then sed  -i 's/run:/run:\n   - libgcc  # [not win]/' $fn/meta.yaml ; fi
     # skip win builds
     sed -i 's/number: 0/number: 0\n  skip: true  # [win32]/g' $fn/meta.yaml
