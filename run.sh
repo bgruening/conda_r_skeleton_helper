@@ -13,7 +13,7 @@ for fn in `cat packages.txt`; do
     sed -i '/^$/{N;/^\n$/d;}' $fn/build.sh
     sed -i 's/ + file LICENSE//' $fn/meta.yaml
     sed -i 's/ | file LICENSE//' $fn/meta.yaml
-    if grep -lq "\- gcc"  $fn/meta.yaml ; then sed  -i 's/run:/run:\n    - libgcc  # [not win]/' $fn/meta.yaml ; fi
+    sed  -i 's/{indent}/\n    - /' $fn/meta.yaml
     # skip win builds
     sed -i 's/number: 0/number: 0\n  skip: true  # [win32]/g' $fn/meta.yaml
 
@@ -26,6 +26,4 @@ for fn in `cat packages.txt`; do
 done
 
 
-# if GCC add `libgcc # [not win]`
-grep gcc r-*/* -R
 grep license tmp/*.meta.diff
