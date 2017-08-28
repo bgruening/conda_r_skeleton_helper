@@ -11,8 +11,7 @@ for fn in `cat packages.txt`; do
     sed -i '/^@.*$/ d' $fn/bld.bat
     sed -i '/^$/{N;/^\n$/d;}' $fn/meta.yaml
     sed -i '/^$/{N;/^\n$/d;}' $fn/build.sh
-    sed -i 's/ + file LICENSE//' $fn/meta.yaml
-    sed -i 's/ | file LICENSE//' $fn/meta.yaml
+    sed -i 's/ [+|] file LICEN[SC]E//' $fn/meta.yaml
     sed  -i 's/{indent}/\n    - /' $fn/meta.yaml
     # skip win builds
     sed -i 's/number: 0/number: 0\n  skip: true  # [win32]/g' $fn/meta.yaml
