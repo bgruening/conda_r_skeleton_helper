@@ -16,6 +16,11 @@ for fn in `cat packages.txt`; do
     # skip win builds
     sed -i 's/number: 0/number: 0\n  skip: true  # [win32]/g' $fn/meta.yaml
 
+    # Add GPL-3
+    sed -i s/"  license_family: GPL3"/"  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\\share\\\licenses\\\GPL-3'  # [win]"/ $fn/meta.yaml
+    # Add GPL-2
+    sed -i s/"  license_family: GPL2"/"  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-2'  # [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\\share\\\licenses\\\GPL-2'  # [win]"/ $fn/meta.yaml
+
     sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' $fn/bld.bat
     sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' $fn/meta.yaml
     sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' $fn/build.sh
