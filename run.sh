@@ -13,7 +13,7 @@ for fn in `cat packages.txt`; do
     sed -i.bak '/^$/{N;/^\n$/d;}' $fn/build.sh
     sed -i.bak 's/ [+|] file LICEN[SC]E//' $fn/meta.yaml
     sed  -i.bak 's/{indent}/\
-    - /' $fn/meta.yaml # Ridiculous POPSIX-stable way to get newline:(
+    - /' $fn/meta.yaml # Ridiculous POSIX-stable way to get newline:(
     # skip win builds
     sed -i.bak 's/number: 0/number: 0\
   skip: true  # [win32]/g' $fn/meta.yaml
