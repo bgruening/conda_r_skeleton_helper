@@ -1,5 +1,18 @@
 #!/usr/bin/env Rscript
 
+# Helper script to create recipes for CRAN R packages to submit to conda-forge.
+#
+# Setup checklist:
+#
+# 1. Put the name of the package(s) in packages.txt
+# 2. Add your GitHub username to the list of maintainers in extra.yaml
+# 3. Run `Rscript run.R` in this directory
+# 4. Move the recipe directory to staged-recipes/recipes
+#
+# Installation requirements:
+#
+# conda, conda-build 2, R, stringr
+
 # Setup checks -----------------------------------------------------------------
 
 if (!require(stringr, quietly = TRUE)) {
