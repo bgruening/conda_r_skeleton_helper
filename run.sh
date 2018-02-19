@@ -19,11 +19,11 @@ for fn in `cat packages.txt`; do
   skip: true  # [win32]/g' $fn/meta.yaml
 
     # Add GPL-3
-    sed -i.bak "s/  license_family: GPL3/  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-3'  \# [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\[[:space:]]hare\\\licenses\\\GPL-3' \# [win]/" $fn/meta.yaml
+    sed -i.bak "s/  license_family: GPL3/  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-3'  \# [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\share\\\licenses\\\GPL-3' \# [win]/" $fn/meta.yaml
     # Add GPL-2
     sed -i.bak 's/  license_family: GPL2/  license_family: GPL2\
   license_file: '"'"'{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-2'"'"'  \# [unix]\
-  license_file: '"'"'{{ environ[\"PREFIX\"] }}\\\R\\[[:space:]]hare\\\licenses\\\GPL-2'"'"'  \# [win]/' $fn/meta.yaml
+  license_file: '"'"'{{ environ[\"PREFIX\"] }}\\\R\\share\\\licenses\\\GPL-2'"'"'  \# [win]/' $fn/meta.yaml
 
     sed -i.bak -e ':a' -e '/^\n*$/{$d;N;};/\n$/ba' $fn/bld.bat
     sed -i.bak -e ':a' -e '/^\n*$/{$d;N;};/\n$/ba' $fn/meta.yaml
