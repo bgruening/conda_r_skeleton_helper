@@ -18,8 +18,9 @@ conda install -c conda-forge conda-build
 ## Using the script
 
 1. Put the package name(s) in `packages.txt` in the form of `r-foobar`
-1. Add your GitHub username to the list of maintainers in extra.yaml
-1. Execute the helper script:
+1. Add your GitHub username to the list of maintainers in `extra.yaml`
+1. Execute the helper script using one of the following methods:
+
     a. Run the bash script in the Terminal
     ```
     bash run.sh
@@ -32,6 +33,7 @@ conda install -c conda-forge conda-build
     ```
     source("run.R")
     ```
+
 1. Please check the recipe(s) manually. Especially the LICENSE section - this
 sections should not contain the word license.
 1. Move the recipe directory to `staged-recipes/recipes`
