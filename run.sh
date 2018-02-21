@@ -18,12 +18,24 @@ for fn in `cat packages.txt`; do
     sed -i.bak 's/number: 0/number: 0\
   skip: true  # [win32]/g' $fn/meta.yaml
 
-    # Add GPL-3
-    sed -i.bak "s/  license_family: GPL3/  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-3'  \# [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\share\\\licenses\\\GPL-3' \# [win]/" $fn/meta.yaml
-    # Add GPL-2
-    sed -i.bak 's/  license_family: GPL2/  license_family: GPL2\
+    if [[ $(uname -s) == "Linux" ]]; then
+        # Add GPL-3
+	sed -i.bak "s/  license_family: GPL3/  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-3'  \# [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\\share\\\licenses\\\GPL-3'  \# [win]/" $fn/meta.yaml
+	# Add GPL-2
+	sed -i.bak "s/  license_family: GPL2/  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-2'  \# [unix]\n  license_file: '{{ environ[\"PREFIX\"] }}\\\R\\\share\\\licenses\\\GPL-2'  \# [win]/" $fn/meta.yaml
+    elif [[ $(uname -s) == "Darwin" ]]; then
+        # Add GPL-3
+        sed -i.bak 's/  license_family: GPL3/  license_family: GPL3\
+  license_file: '"'"'{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-3'"'"'  \# [unix]\
+  license_file: '"'"'{{ environ[\"PREFIX\"] }}\\\R\\\share\\\licenses\\\GPL-3'"'"'  \# [win]/' $fn/meta.yaml
+        # Add GPL-2
+        sed -i.bak 's/  license_family: GPL2/  license_family: GPL2\
   license_file: '"'"'{{ environ[\"PREFIX\"] }}\/lib\/R\/share\/licenses\/GPL-2'"'"'  \# [unix]\
-  license_file: '"'"'{{ environ[\"PREFIX\"] }}\\\R\\share\\\licenses\\\GPL-2'"'"'  \# [win]/' $fn/meta.yaml
+  license_file: '"'"'{{ environ[\"PREFIX\"] }}\\\R\\\share\\\licenses\\\GPL-2'"'"'  \# [win]/' $fn/meta.yaml
+    else
+	echo "This script only supports Linux and macOS"
+	exit 1
+    fi
 
     sed -i.bak -e ':a' -e '/^\n*$/{$d;N;};/\n$/ba' $fn/bld.bat
     sed -i.bak -e ':a' -e '/^\n*$/{$d;N;};/\n$/ba' $fn/meta.yaml
