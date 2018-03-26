@@ -9,10 +9,10 @@ process. Also, please only submit one recipe per Pull Request.
 ## Installation
 
 You will need conda and conda-build 2 installed. To install conda-build 2
-instead of 3, specify the conda-forge channel.
+instead of 3, run the following:
 
 ```
-conda install -c conda-forge conda-build
+conda install -c conda-forge conda-build=2
 ```
 
 ## Using the script

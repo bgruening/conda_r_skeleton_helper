@@ -28,14 +28,14 @@ if (conda == "") {
 conda_build <- Sys.which("conda-build")
 if (conda_build == "") {
   stop("You need to have conda-build installed to use the helper script",
-       "\nRun: conda install -c conda-forge conda-build")
+       "\nRun: conda install -c conda-forge conda-build=2")
 }
 
 conda_build_version <- system2("conda", args = c("build", "--version"),
                                stdout = TRUE)
 if (!grepl(pattern = "conda-build 2.+", conda_build_version)) {
   stop("You need to install conda-build from the conda-forge channel",
-       "\nRun: conda install -c conda-forge conda-build")
+       "\nRun: conda install -c conda-forge conda-build=2")
 }
 
 if (!file.exists("packages.txt")) {
