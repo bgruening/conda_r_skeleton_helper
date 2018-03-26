@@ -66,14 +66,16 @@ for (fn in packages) {
   meta_raw <- readLines(meta_fname)
   meta_new <- meta_raw
 
-  # Fix the home URL. A bug in conda-build 2 truncates the home URL (and
+  # Fix the home URL. A bug in conda-build 2 truncates the custom home URL (and
   # sometimes the description too if it contains a semicolon). This has been
-  # fixed in conda-build 3. For now, grab the URL from the CRAN metadata to fix
-  # it.
+  # fixed in conda-build 3. For now, grab the URL from the CRAN metadata (if it
+  # exists) to fix it.
   cran_url <- str_subset(meta_new, "^# URL:\\s")
-  cran_url <- str_replace(cran_url, "^# URL:\\s", "")
-  conda_url_line <- str_which(meta_new, "^  home:")
-  meta_new[conda_url_line] <- paste0("  home: ", cran_url)
+  if (length(cran_url) == 1) {
+    cran_url <- str_replace(cran_url, "^# URL:\\s", "")
+    conda_url_line <- str_which(meta_new, "^  home:")
+    meta_new[conda_url_line] <- paste0("  home: ", cran_url)
+  }
 
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
