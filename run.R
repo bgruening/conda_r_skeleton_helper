@@ -55,6 +55,8 @@ if (!file.exists("extra.yaml")) {
 packages <- readLines("packages.txt")
 
 for (fn in packages) {
+  if (fn == "") next
+
   cat(sprintf("Processing %s\n", fn))
 
   # Create the recipe using the cran skeleton
