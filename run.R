@@ -15,7 +15,7 @@
 
 # Setup checks -----------------------------------------------------------------
 
-if (!require(stringr, quietly = TRUE)) {
+if (!require("stringr", quietly = TRUE)) {
   stop("Please install the R package stringr to use the helper script",
        "\nRun: install.packages(\"stringr\")")
 }

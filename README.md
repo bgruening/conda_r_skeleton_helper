@@ -8,12 +8,19 @@ process. Also, please only submit one recipe per Pull Request.
 
 ## Installation
 
-You will need Python 3, conda, and conda-build 2 installed. To install conda-build 2
+You will need conda and conda-build 2 installed. To install conda-build 2
 instead of 3, run the following:
 
 ```
 conda install -c conda-forge conda-build=2
 ```
+
+To use the Python script `run.py`, you will need to install Python 3.
+
+Alternatively, to use the R script `run.R`, you will need to install R and the
+stringr package.
+
+Either of these scripts can be run on Linux, macOS, and Windows.
 
 ## Using the script
 
