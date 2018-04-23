@@ -8,7 +8,7 @@ process. Also, please only submit one recipe per Pull Request.
 
 ## Installation
 
-You will need conda and conda-build 2 installed. To install conda-build 2
+You will need Python 3, conda, and conda-build 2 installed. To install conda-build 2
 instead of 3, run the following:
 
 ```
@@ -21,9 +21,9 @@ conda install -c conda-forge conda-build=2
 1. Add your GitHub username to the list of maintainers in `extra.yaml`
 1. Execute the helper script using one of the following methods:
 
-    a. Run the bash script in the Terminal
+    a. Run the Python script in the Terminal
     ```
-    bash run.sh
+    python run.py
     ```
     b. Run the R script in the Terminal
     ```
@@ -32,6 +32,11 @@ conda install -c conda-forge conda-build=2
     c. Source the R script in the R console
     ```
     source("run.R")
+    ```
+    d. Run the bash script in the Terminal
+    (for backwards compatibility. This runs the Python script)
+    ```
+    bash run.sh
     ```
 
 1. Please check the recipe(s) manually. Especially the LICENSE section - this
