@@ -59,6 +59,11 @@ for (fn in packages) {
 
   cat(sprintf("Processing %s\n", fn))
 
+  if (dir.exists(fn)) {
+    cat(sprintf("Skipping %s b/c directory already exists\n", fn))
+    next
+  }
+
   # Create the recipe using the cran skeleton
   system2("conda", args = c("skeleton", "cran", fn))
 

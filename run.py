@@ -59,6 +59,10 @@ for fn in packages:
 
     sys.stdout.write('Processing %s\n'%(fn))
 
+    if os.path.exists(fn):
+        sys.stderr.write('Skipping %s b/c directory already exists\n'%(fn))
+        continue
+
     # Create the recipe using the cran skeleton
     sp.run(['conda', 'skeleton', 'cran', fn])
 
