@@ -54,7 +54,7 @@ with open('packages.txt', 'r') as f:
 
 for fn in packages:
 
-    if fn == '':
+    if not fn:
         continue
 
     sys.stdout.write('Processing %s\n'%(fn))
@@ -68,52 +68,50 @@ for fn in packages:
 
     # Edit meta.yaml -------------------------------------------------------------
 
+    # license_file text for GPL'd packages
+    gpl2 = ['  license_family: GPL2',
+            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'  # [unix]',
+            '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-2\'  # [win]']
+    gpl3 = ['  license_family: GPL3',
+            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'  # [unix]',
+            '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-3\'  # [win]']
+
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
-        meta_raw = f.readlines()
-    meta_new = list(meta_raw)
+        meta_new = []
 
-    re_comment = re.compile('^\s*#')
-
-    for i in range(len(meta_new)):
+        for line in f:
     
-        # Remove comments
-        if re_comment.match(meta_new[i]):
-            meta_new[i] = ''
+            # Remove comments and blank lines
+            if re.match('^\s*#', line) or re.match('^\n$', line):
+                continue
 
-        # Remove '+ file LICENSE' or '+ file LICENCE'
-        meta_new[i] = re.sub(' [+|] file LICEN[SC]E', '', meta_new[i])
+            # Remove '+ file LICENSE' or '+ file LICENCE'
+            line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
-        # Replace '{indent}' with proper indentation. This bug has been fixed in
-        # conda-build 3, but is still present in conda-build 2.
-        meta_new[i] = re.sub('\\{indent\\}', '\n    - ', meta_new[i])
+            # Replace '{indent}' with proper indentation. This bug has been fixed in
+            # conda-build 3, but is still present in conda-build 2.
+            line = re.sub('\\{indent\\}', '\n    - ', line)
 
-        # Skip build on win32
-        meta_new[i] = re.sub('  number: 0',
-                             '  number: 0\n  skip: true  # [win32]', meta_new[i])
+            # Skip build on win32
+            line = re.sub('  number: 0',
+                          '  number: 0\n  skip: true  # [win32]', line)
 
-        # Add path to copy GPL-3 license shipped with r-base
-        gpl3 = ['  license_family: GPL3',
-                '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'  # [unix]',
-                '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-3\'  # [win]']
-        meta_new[i] = re.sub('  license_family: GPL3', '\n'.join(gpl3), meta_new[i])
+            # Add path to copy GPL-2 license shipped with r-base
+            line = re.sub('  license_family: GPL2', '\n'.join(gpl2), line)
 
-        # Add path to copy GPL-2 license shipped with r-base
-        gpl2 = ['  license_family: GPL2',
-                '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'  # [unix]',
-                '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-2\'  # [win]']
-        meta_new[i] = re.sub('  license_family: GPL2', '\n'.join(gpl2), meta_new[i])
+            # Add path to copy GPL-3 license shipped with r-base
+            line = re.sub('  license_family: GPL3', '\n'.join(gpl3), line)
 
-        # Remove blank lines
-        meta_new[i] = re.sub('^\n$', '', meta_new[i])
+            # Add a blank line before a new section
+            line = re.sub('^[a-z]', '\n\g<0>', line)
 
-        # Add a blank line before a new section
-        meta_new[i] = re.sub('^[a-z]', '\n\g<0>', meta_new[i])
+            meta_new += line
 
     # Add maintainers listed in extra.yaml
     with open('extra.yaml', 'r') as f:
         maintainers = f.readlines()
-    meta_new = meta_new + maintainers
+    meta_new += maintainers
 
     with open(meta_fname, 'w') as f:
         f.writelines(meta_new)
@@ -122,26 +120,27 @@ for fn in packages:
 
     build_fname = os.path.join(fn, 'build.sh')
     with open(build_fname, 'r') as f:
-        build_raw = f.readlines()
-    build_new = list(build_raw)
+        build_new = []
 
-    for i in range(len(build_new)):
+        for line in f:
 
-        # Remove line that moves DESCRIPTION (starts with 'mv ')
-        if re.match('^mv\\s.*', build_new[i]):
-            build_new[i] = ''
+            # Remove line that moves DESCRIPTION (starts with 'mv ')
+            if re.match('^mv\\s.*', line):
+                continue
 
-        # Remove line that filters DESCRIPTION with grep (starts with 'grep ')
-        if re.match('^grep\\s.*', build_new[i]):
-            build_new[i] = ''
+            # Remove line that filters DESCRIPTION with grep (starts with 'grep ')
+            if re.match('^grep\\s.*', line):
+                continue
 
-        # Remove comments (but not shebang line)
-        if re.match('^#\\s', build_new[i]):
-            build_new[i] = ''
+            # Remove comments (but not shebang line)
+            if re.match('^#\\s', line):
+                continue
 
-        # Remove empty lines
-        if re.match('^$', build_new[i]):
-            build_new[i] = ''
+            # Remove empty lines
+            if re.match('^$', line):
+                continue
+
+            build_new += line
 
     with open(build_fname, 'w') as f:
         f.writelines(build_new)
@@ -150,18 +149,15 @@ for fn in packages:
 
     bld_fname = os.path.join(fn, 'bld.bat')
     with open(bld_fname, 'r') as f:
-        bld_raw = f.readlines()
-    bld_new = list(bld_raw)
+        bld_new = []
 
-    for i in range(len(bld_new)):
+        for line in f:
 
-        # Remove comments (start with '@')
-        if re.match('^@', bld_new[i]):
-            bld_new[i] = ''
+            # Remove comments (start with '@') and empty lines
+            if re.match('^@', line) or re.match('^$', line):
+                continue
 
-        # Remove empty lines
-        if re.match('^$', bld_new[i]):
-            bld_new[i] = ''
+            bld_new += line
 
     with open(bld_fname, 'w') as f:
         f.writelines(bld_new)
