@@ -15,15 +15,22 @@ instead of 3, run the following:
 conda install -c conda-forge conda-build=2
 ```
 
+To use the Python script `run.py`, you will need to install Python 3.
+
+Alternatively, to use the R script `run.R`, you will need to install R and the
+stringr package.
+
+Either of these scripts can be run on Linux, macOS, and Windows.
+
 ## Using the script
 
 1. Put the package name(s) in `packages.txt` in the form of `r-foobar`
 1. Add your GitHub username to the list of maintainers in `extra.yaml`
 1. Execute the helper script using one of the following methods:
 
-    a. Run the bash script in the Terminal
+    a. Run the Python script in the Terminal
     ```
-    bash run.sh
+    python run.py
     ```
     b. Run the R script in the Terminal
     ```
@@ -32,6 +39,11 @@ conda install -c conda-forge conda-build=2
     c. Source the R script in the R console
     ```
     source("run.R")
+    ```
+    d. Run the bash script in the Terminal
+    (for backwards compatibility. This runs the Python script)
+    ```
+    bash run.sh
     ```
 
 1. Please check the recipe(s) manually. Especially the LICENSE section - this

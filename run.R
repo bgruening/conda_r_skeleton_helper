@@ -15,7 +15,7 @@
 
 # Setup checks -----------------------------------------------------------------
 
-if (!require(stringr, quietly = TRUE)) {
+if (!require("stringr", quietly = TRUE)) {
   stop("Please install the R package stringr to use the helper script",
        "\nRun: install.packages(\"stringr\")")
 }
@@ -58,6 +58,11 @@ for (fn in packages) {
   if (fn == "") next
 
   cat(sprintf("Processing %s\n", fn))
+
+  if (dir.exists(fn)) {
+    cat(sprintf("Skipping %s b/c directory already exists\n", fn))
+    next
+  }
 
   # Create the recipe using the cran skeleton
   system2("conda", args = c("skeleton", "cran", fn))
