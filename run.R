@@ -11,7 +11,7 @@
 #
 # Installation requirements:
 #
-# conda, conda-build 2, R, stringr
+# conda, conda-build 3, R, stringr
 
 # Setup checks -----------------------------------------------------------------
 
@@ -28,14 +28,14 @@ if (conda == "") {
 conda_build <- Sys.which("conda-build")
 if (conda_build == "") {
   stop("You need to have conda-build installed to use the helper script",
-       "\nRun: conda install -c conda-forge conda-build=2")
+       "\nRun: conda install -c conda-forge conda-build")
 }
 
 conda_build_version <- system2("conda", args = c("build", "--version"),
                                stdout = TRUE)
-if (!grepl(pattern = "conda-build 2.+", conda_build_version)) {
-  stop("You need to install conda-build from the conda-forge channel",
-       "\nRun: conda install -c conda-forge conda-build=2")
+if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
+  stop("You need to install conda-build 3 from the conda-forge channel",
+       "\nRun: conda install -c conda-forge conda-build")
 }
 
 if (!file.exists("packages.txt")) {
@@ -73,30 +73,18 @@ for (fn in packages) {
   meta_raw <- readLines(meta_fname)
   meta_new <- meta_raw
 
-  # Fix the home URL. A bug in conda-build 2 truncates the custom home URL (and
-  # sometimes the description too if it contains a semicolon). This has been
-  # fixed in conda-build 3. For now, grab the URL from the CRAN metadata (if it
-  # exists) to fix it.
-  cran_url <- str_subset(meta_new, "^# URL:\\s")
-  if (length(cran_url) == 1) {
-    cran_url <- str_replace(cran_url, "^# URL:\\s", "")
-    conda_url_line <- str_which(meta_new, "^  home:")
-    meta_new[conda_url_line] <- paste0("  home: ", cran_url)
-  }
-
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
 
-  # Remove "+ file LICENSE" or "+ file LICENCE"
-  meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
-
-  # Replace "{indent}" with proper indentation. This bug has been fixed in
-  # conda-build 3, but is still present in conda-build 2.
-  meta_new <- str_replace(meta_new, "\\{indent\\}", "\n    - ")
+  # Remove merge_build_host
+  meta_new <- meta_new[!str_detect(meta_new, "merge_build_host")]
 
   # Skip build on win32
   meta_new <- str_replace(meta_new, "  number: 0",
                           "  number: 0\n  skip: true  # [win32]")
+
+  # Remove "+ file LICENSE" or "+ file LICENCE"
+  meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
 
   # Add path to copy GPL-3 license shipped with r-base
   gpl3 <- c(
@@ -141,11 +129,13 @@ for (fn in packages) {
   build_raw <- readLines(build_fname)
   build_new <- build_raw
 
-  # Remove line that moves DESCRIPTION (starts with "mv ")
-  build_new <- str_subset(build_new, "^[^mv\\s.*]")
+  # Remove line that moves DESCRIPTION
+  build_new <- build_new[!str_detect(build_new,
+                                     "mv DESCRIPTION DESCRIPTION.old")]
 
-  # Remove line that filters DESCRIPTION with grep (starts with "grep ")
-  build_new <- str_subset(build_new, "^[^grep\\s.*]")
+  # Remove line that filters DESCRIPTION with grep
+  build_new <- build_new[!str_detect(build_new,
+                                     "grep -v '\\^Priority: ' DESCRIPTION.old > DESCRIPTION")]
 
   # Remove comments (but not shebang line)
   build_new <- build_new[!str_detect(build_new, "^#\\s")]
@@ -154,20 +144,6 @@ for (fn in packages) {
   build_new <- build_new[!str_detect(build_new, "^$")]
 
   writeLines(build_new, build_fname)
-
-  # Edit bld.bat ---------------------------------------------------------------
-
-  bld_fname <- file.path(fn, "bld.bat")
-  bld_raw <- readLines(bld_fname)
-  bld_new <- bld_raw
-
-  # Remove comments (start with "@")
-  bld_new <- bld_new[!str_detect(bld_new, "^@")]
-
-  # Remove empty lines
-  bld_new <- bld_new[!str_detect(bld_new, "^$")]
-
-  writeLines(bld_new, bld_fname)
 
   # Manual edit ----------------------------------------------------------------
 
