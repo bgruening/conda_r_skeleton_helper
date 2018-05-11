@@ -8,11 +8,10 @@ process. Also, please only submit one recipe per Pull Request.
 
 ## Installation
 
-You will need conda and conda-build 2 installed. To install conda-build 2
-instead of 3, run the following:
+You will need conda and conda-build 3 installed:
 
 ```
-conda install -c conda-forge conda-build=2
+conda install -c conda-forge conda-build
 ```
 
 To use the Python script `run.py`, you will need to install Python 3.

@@ -11,7 +11,7 @@
 #
 # Installation requirements:
 #
-# conda, conda-build 2, python 3
+# conda, conda-build 3, python 3
 
 import os
 import re
@@ -33,6 +33,14 @@ if not shutil.which('conda-build'):
     sys.stderr.write('You need to have conda-build installed to use the helper script\n')
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
+
+import conda_build
+
+conda_build_version = conda_build.__version__
+if not re.match('^3.+', conda_build_version):
+  sys.stderr.write('You need to install conda-build 3 from the conda-forge channel\n')
+  sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
+  sys.exit(1)
 
 if not os.path.isfile('packages.txt'):
     sys.stderr.write('Unable to find the file packages.txt.\n')
@@ -81,21 +89,21 @@ for fn in packages:
         meta_new = []
 
         for line in f:
-    
+
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
 
-            # Remove '+ file LICENSE' or '+ file LICENCE'
-            line = re.sub(' [+|] file LICEN[SC]E', '', line)
-
-            # Replace '{indent}' with proper indentation. This bug has been fixed in
-            # conda-build 3, but is still present in conda-build 2.
-            line = re.sub('\\{indent\\}', '\n    - ', line)
+            # Remove merge_build_host
+            if re.match('.*merge_build_host.*', line):
+                continue
 
             # Skip build on win32
             line = re.sub('  number: 0',
                           '  number: 0\n  skip: true  # [win32]', line)
+
+            # Remove '+ file LICENSE' or '+ file LICENCE'
+            line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
             # Add path to copy GPL-2 license shipped with r-base
             line = re.sub('  license_family: GPL2', '\n'.join(gpl2), line)
@@ -124,12 +132,12 @@ for fn in packages:
 
         for line in f:
 
-            # Remove line that moves DESCRIPTION (starts with 'mv ')
-            if re.match('^mv\\s.*', line):
+            # Remove line that moves DESCRIPTION
+            if re.match('.*mv DESCRIPTION DESCRIPTION.old', line):
                 continue
 
-            # Remove line that filters DESCRIPTION with grep (starts with 'grep ')
-            if re.match('^grep\\s.*', line):
+            # Remove line that filters DESCRIPTION with grep
+            if re.match('.*grep -v \'\\^Priority: \' DESCRIPTION.old > DESCRIPTION', line):
                 continue
 
             # Remove comments (but not shebang line)
@@ -144,23 +152,6 @@ for fn in packages:
 
     with open(build_fname, 'w') as f:
         f.writelines(build_new)
-
-    # Edit bld.bat ---------------------------------------------------------------
-
-    bld_fname = os.path.join(fn, 'bld.bat')
-    with open(bld_fname, 'r') as f:
-        bld_new = []
-
-        for line in f:
-
-            # Remove comments (start with '@') and empty lines
-            if re.match('^@', line) or re.match('^$', line):
-                continue
-
-            bld_new += line
-
-    with open(bld_fname, 'w') as f:
-        f.writelines(bld_new)
 
     # Manual edit ----------------------------------------------------------------
 
