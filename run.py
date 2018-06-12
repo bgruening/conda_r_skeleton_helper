@@ -94,10 +94,6 @@ for fn in packages:
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
 
-            # Remove merge_build_host
-            if re.match('.*merge_build_host.*', line):
-                continue
-
             # Skip build on win32
             line = re.sub('  number: 0',
                           '  number: 0\n  skip: true  # [win32]', line)

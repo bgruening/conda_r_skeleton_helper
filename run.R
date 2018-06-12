@@ -76,9 +76,6 @@ for (fn in packages) {
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
 
-  # Remove merge_build_host
-  meta_new <- meta_new[!str_detect(meta_new, "merge_build_host")]
-
   # Skip build on win32
   meta_new <- str_replace(meta_new, "  number: 0",
                           "  number: 0\n  skip: true  # [win32]")
