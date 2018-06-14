@@ -83,7 +83,7 @@ for (fn in packages) {
   # Add sed and coreutils when make is present
   regex_make <- "    - \\{\\{posix\\}\\}make"
   meta_new <- str_replace(meta_new, regex_make,
-                          "    - {{posix}}make\n    - {{posix}}sed\n    - {{posix}}coreutils")
+                          "    - {{posix}}make\n    - {{posix}}sed  # [win]\n    - {{posix}}coreutils  # [win]")
 
   # Remove "+ file LICENSE" or "+ file LICENCE"
   meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")

@@ -100,7 +100,7 @@ for fn in packages:
 
             # Add sed and coreutils when make is present
             if line == '    - {{posix}}make\n':
-                line = '    - {{posix}}make\n    - {{posix}}sed\n    - {{posix}}coreutils\n'
+                line = '    - {{posix}}make\n    - {{posix}}sed  # [win]\n    - {{posix}}coreutils  # [win]\n'
 
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
