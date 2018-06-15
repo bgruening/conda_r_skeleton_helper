@@ -80,6 +80,11 @@ for (fn in packages) {
   meta_new <- str_replace(meta_new, "  number: 0",
                           "  number: 0\n  skip: true  # [win32]")
 
+  # Add sed and coreutils when make is present
+  regex_make <- "    - \\{\\{posix\\}\\}make"
+  meta_new <- str_replace(meta_new, regex_make,
+                          "    - {{posix}}make\n    - {{posix}}sed  # [win]\n    - {{posix}}coreutils  # [win]")
+
   # Remove "+ file LICENSE" or "+ file LICENCE"
   meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
 

@@ -95,8 +95,12 @@ for fn in packages:
                 continue
 
             # Skip build on win32
-            line = re.sub('  number: 0',
-                          '  number: 0\n  skip: true  # [win32]', line)
+            if line == '  number: 0\n':
+                line = '  number: 0\n  skip: true  # [win32]\n'
+
+            # Add sed and coreutils when make is present
+            if line == '    - {{posix}}make\n':
+                line = '    - {{posix}}make\n    - {{posix}}sed  # [win]\n    - {{posix}}coreutils  # [win]\n'
 
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
