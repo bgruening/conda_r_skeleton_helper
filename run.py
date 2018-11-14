@@ -72,7 +72,7 @@ for fn in packages:
         continue
 
     # Create the recipe using the cran skeleton
-    sp.run(['conda', 'skeleton', 'cran', fn])
+    sp.run(['conda', 'skeleton', 'cran', '--use-noarch-generic', fn])
 
     # Edit meta.yaml -------------------------------------------------------------
 
@@ -93,10 +93,6 @@ for fn in packages:
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
-
-            # Skip build on win32
-            if line == '  number: 0\n':
-                line = '  number: 0\n  skip: true  # [win32]\n'
 
             # Add sed and coreutils when make is present
             if line == '    - {{posix}}make\n':

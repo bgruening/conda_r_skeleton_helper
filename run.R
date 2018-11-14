@@ -65,7 +65,7 @@ for (fn in packages) {
   }
 
   # Create the recipe using the cran skeleton
-  system2("conda", args = c("skeleton", "cran", fn))
+  system2("conda", args = c("skeleton", "cran", "--use-noarch-generic", fn))
 
   # Edit meta.yaml -------------------------------------------------------------
 
@@ -75,10 +75,6 @@ for (fn in packages) {
 
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
-
-  # Skip build on win32
-  meta_new <- str_replace(meta_new, "  number: 0",
-                          "  number: 0\n  skip: true  # [win32]")
 
   # Add sed and coreutils when make is present
   regex_make <- "    - \\{\\{posix\\}\\}make"
