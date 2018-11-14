@@ -87,16 +87,14 @@ for (fn in packages) {
   # Add path to copy GPL-3 license shipped with r-base
   gpl3 <- c(
     "  license_family: GPL3",
-    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-3'  # [unix]",
-    "  license_file: '{{ environ[\"PREFIX\"] }}\\\\R\\\\share\\\\licenses\\\\GPL-3'  # [win]")
+    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-3'")
   meta_new <- str_replace(meta_new, "  license_family: GPL3",
                           paste(gpl3, collapse = "\n"))
 
   # Add path to copy GPL-2 license shipped with r-base
   gpl2 <- c(
     "  license_family: GPL2",
-    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-2'  # [unix]",
-    "  license_file: '{{ environ[\"PREFIX\"] }}\\\\R\\\\share\\\\licenses\\\\GPL-2'  # [win]")
+    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-2'")
   meta_new <- str_replace(meta_new, "  license_family: GPL2",
                           paste(gpl2, collapse = "\n"))
 

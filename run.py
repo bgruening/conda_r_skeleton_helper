@@ -78,11 +78,9 @@ for fn in packages:
 
     # license_file text for GPL'd packages
     gpl2 = ['  license_family: GPL2',
-            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'  # [unix]',
-            '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-2\'  # [win]']
+            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'']
     gpl3 = ['  license_family: GPL3',
-            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'  # [unix]',
-            '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-3\'  # [win]']
+            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'']
 
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
