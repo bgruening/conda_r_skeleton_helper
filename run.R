@@ -65,7 +65,7 @@ for (fn in packages) {
   }
 
   # Create the recipe using the cran skeleton
-  system2("conda", args = c("skeleton", "cran", fn))
+  system2("conda", args = c("skeleton", "cran", "--use-noarch-generic", fn))
 
   # Edit meta.yaml -------------------------------------------------------------
 
@@ -75,10 +75,6 @@ for (fn in packages) {
 
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
-
-  # Skip build on win32
-  meta_new <- str_replace(meta_new, "  number: 0",
-                          "  number: 0\n  skip: true  # [win32]")
 
   # Add sed and coreutils when make is present
   regex_make <- "    - \\{\\{posix\\}\\}make"
@@ -91,16 +87,14 @@ for (fn in packages) {
   # Add path to copy GPL-3 license shipped with r-base
   gpl3 <- c(
     "  license_family: GPL3",
-    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-3'  # [unix]",
-    "  license_file: '{{ environ[\"PREFIX\"] }}\\\\R\\\\share\\\\licenses\\\\GPL-3'  # [win]")
+    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-3'")
   meta_new <- str_replace(meta_new, "  license_family: GPL3",
                           paste(gpl3, collapse = "\n"))
 
   # Add path to copy GPL-2 license shipped with r-base
   gpl2 <- c(
     "  license_family: GPL2",
-    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-2'  # [unix]",
-    "  license_file: '{{ environ[\"PREFIX\"] }}\\\\R\\\\share\\\\licenses\\\\GPL-2'  # [win]")
+    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-2'")
   meta_new <- str_replace(meta_new, "  license_family: GPL2",
                           paste(gpl2, collapse = "\n"))
 

@@ -72,17 +72,15 @@ for fn in packages:
         continue
 
     # Create the recipe using the cran skeleton
-    sp.run(['conda', 'skeleton', 'cran', fn])
+    sp.run(['conda', 'skeleton', 'cran', '--use-noarch-generic', fn])
 
     # Edit meta.yaml -------------------------------------------------------------
 
     # license_file text for GPL'd packages
     gpl2 = ['  license_family: GPL2',
-            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'  # [unix]',
-            '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-2\'  # [win]']
+            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'']
     gpl3 = ['  license_family: GPL3',
-            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'  # [unix]',
-            '  license_file: \'{{ environ["PREFIX"] }}\\\\R\\\\share\\\\licenses\\\\GPL-3\'  # [win]']
+            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'']
 
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
@@ -93,10 +91,6 @@ for fn in packages:
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
-
-            # Skip build on win32
-            if line == '  number: 0\n':
-                line = '  number: 0\n  skip: true  # [win32]\n'
 
             # Add sed and coreutils when make is present
             if line == '    - {{posix}}make\n':
