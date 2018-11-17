@@ -38,6 +38,14 @@ if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
        "\nRun: conda install -c conda-forge conda-build")
 }
 
+conda_build_version_num <- str_extract(conda_build_version,
+                                       "\\d+\\.\\d+\\.\\d+")
+if (compareVersion(conda_build_version_num, "3.11.0") == -1) {
+  stop("You need to install conda-build 3.11.0 or later.",
+       "\nCurrently installed version: ", conda_build_version_num,
+       "\nRun: conda install -c conda-forge conda-build")
+}
+
 if (!file.exists("packages.txt")) {
   stop("Unable to find the file packages.txt.",
        " Please check that it exists and that you are executing the script",
@@ -75,11 +83,6 @@ for (fn in packages) {
 
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
-
-  # Add sed and coreutils when make is present
-  regex_make <- "    - \\{\\{posix\\}\\}make"
-  meta_new <- str_replace(meta_new, regex_make,
-                          "    - {{posix}}make\n    - {{posix}}sed  # [win]\n    - {{posix}}coreutils  # [win]")
 
   # Remove "+ file LICENSE" or "+ file LICENCE"
   meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")

@@ -13,6 +13,7 @@
 #
 # conda, conda-build 3, python 3
 
+from distutils.version import StrictVersion
 import os
 import re
 import shutil
@@ -38,9 +39,16 @@ import conda_build
 
 conda_build_version = conda_build.__version__
 if not re.match('^3.+', conda_build_version):
-  sys.stderr.write('You need to install conda-build 3 from the conda-forge channel\n')
-  sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
-  sys.exit(1)
+    sys.stderr.write('You need to install conda-build 3 from the conda-forge channel\n')
+    sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
+    sys.exit(1)
+
+v_min = StrictVersion('3.11.0')
+if StrictVersion(conda_build_version) < v_min:
+    sys.stderr.write('You need to install conda-build 3.11.0 or later.\n')
+    sys.stderr.write('Currently installed version: %s\n'%(conda_build_version))
+    sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
+    sys.exit(1)
 
 if not os.path.isfile('packages.txt'):
     sys.stderr.write('Unable to find the file packages.txt.\n')
@@ -91,10 +99,6 @@ for fn in packages:
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
-
-            # Add sed and coreutils when make is present
-            if line == '    - {{posix}}make\n':
-                line = '    - {{posix}}make\n    - {{posix}}sed  # [win]\n    - {{posix}}coreutils  # [win]\n'
 
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
