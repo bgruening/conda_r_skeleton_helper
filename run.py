@@ -93,12 +93,23 @@ for fn in packages:
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
         meta_new = []
+        is_noarch = False
 
         for line in f:
 
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
+
+            # If it is a noarch recipe, remove {{posix}}zip from build section.
+            #
+            # Motivation: linter fails if selector detected in requirements section of a
+            # noarch recipe.
+            if re.match("  noarch: generic", line):
+                is_noarch = True
+            if is_noarch:
+                line =  re.sub("    - \\{\\{posix\\}\\}zip               # \\[win\\]",
+                               "", line)
 
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)

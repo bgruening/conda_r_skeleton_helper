@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# conda skeleton
+.web_cache/
+
+# conda R recipes
+r-*
