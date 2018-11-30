@@ -93,24 +93,33 @@ for fn in packages:
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
         meta_new = []
+        is_noarch = False
 
         for line in f:
-
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
 
+            # If it is a noarch recipe, remove {{posix}}zip from build section.
+            #
+            # Motivation: linter fails if selector detected in requirements section of a
+            # noarch recipe.
+            if "  noarch: generic" in line:
+                is_noarch = True
+            if is_noarch:
+                line = line.replace("    - \\{\\{posix\\}\\}zip               # \\[win\\]", "")
+
             # Remove '+ file LICENSE' or '+ file LICENCE'
-            line = re.sub(' [+|] file LICEN[SC]E', '', line)
+            line = line.replace(' [+|] file LICEN[SC]E', '')
 
             # Add path to copy GPL-2 license shipped with r-base
-            line = re.sub('  license_family: GPL2', '\n'.join(gpl2), line)
+            line = line.replace('  license_family: GPL2', '\n'.join(gpl2))
 
             # Add path to copy GPL-3 license shipped with r-base
-            line = re.sub('  license_family: GPL3', '\n'.join(gpl3), line)
+            line = line.replace('  license_family: GPL3', '\n'.join(gpl3))
 
             # Add a blank line before a new section
-            line = re.sub('^[a-z]', '\n\g<0>', line)
+            line = line.replace('^[a-z]', '\n\g<0>')
 
             meta_new += line
 
