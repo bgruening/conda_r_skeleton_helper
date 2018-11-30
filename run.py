@@ -110,7 +110,7 @@ for fn in packages:
                 line = line.replace("    - \\{\\{posix\\}\\}zip               # \\[win\\]", "")
 
             # Remove '+ file LICENSE' or '+ file LICENCE'
-            line = line.replace(' [+|] file LICEN[SC]E', '')
+            line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
             # Add path to copy GPL-2 license shipped with r-base
             line = line.replace('  license_family: GPL2', '\n'.join(gpl2))
@@ -119,7 +119,7 @@ for fn in packages:
             line = line.replace('  license_family: GPL3', '\n'.join(gpl3))
 
             # Add a blank line before a new section
-            line = line.replace('^[a-z]', '\n\g<0>')
+            line = re.sub('^[a-z]', '\n\g<0>', line)
 
             meta_new += line
 
