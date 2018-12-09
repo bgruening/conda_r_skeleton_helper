@@ -107,7 +107,7 @@ for fn in packages:
             if "  noarch: generic" in line:
                 is_noarch = True
             if is_noarch:
-                line = line.replace("    - \\{\\{posix\\}\\}zip               # \\[win\\]", "")
+                line = line.replace("    - {{posix}}zip               # [win]", "")
 
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
