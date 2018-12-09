@@ -106,9 +106,10 @@ for fn in packages:
             # noarch recipe.
             if "  noarch: generic" in line:
                 is_noarch = True
+            print(is_noarch)
             if is_noarch:
-                line = line.replace("    - \\{\\{posix\\}\\}zip               # \\[win\\]", "")
-
+                line = line.replace("    - {{posix}}zip               # [win]", "")
+                print(line)
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
