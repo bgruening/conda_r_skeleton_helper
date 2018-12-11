@@ -81,6 +81,11 @@ for (fn in packages) {
   meta_raw <- readLines(meta_fname)
   meta_new <- meta_raw
 
+  # Extract CRAN metadata
+  cran_metadata_start <- which(meta_new == "# The original CRAN metadata for this package was:")
+  cran_metadata <- meta_new[cran_metadata_start:length(meta_new)]
+  cran_metadata <- cran_metadata[str_detect(cran_metadata, "^#\\s[A-Z]\\S+:")]
+
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
 
@@ -130,6 +135,9 @@ for (fn in packages) {
   if (meta_new[sha256_line - 1] == "") {
     meta_new <- meta_new[-(sha256_line - 1)]
   }
+
+  # Add back CRAN metadata
+  meta_new <- c(meta_new, "", cran_metadata)
 
   writeLines(meta_new, meta_fname)
 
