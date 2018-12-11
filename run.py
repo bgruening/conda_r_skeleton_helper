@@ -94,8 +94,16 @@ for fn in packages:
     with open(meta_fname, 'r') as f:
         meta_new = []
         is_noarch = False
+        is_cran_metadata = False
+        cran_metadata = ['\n']
 
         for line in f:
+            # Extract CRAN metadata
+            if "original CRAN metadata" in line:
+                is_cran_metadata = True
+            if is_cran_metadata and re.match('^#\s[A-Z]\S+:', line):
+                cran_metadata += line
+
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
@@ -126,6 +134,9 @@ for fn in packages:
     with open('extra.yaml', 'r') as f:
         maintainers = f.readlines()
     meta_new += maintainers
+
+    # Add back CRAN metadata
+    meta_new += cran_metadata
 
     with open(meta_fname, 'w') as f:
         f.writelines(meta_new)
