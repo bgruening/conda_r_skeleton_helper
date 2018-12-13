@@ -40,8 +40,8 @@ if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
 
 conda_build_version_num <- str_extract(conda_build_version,
                                        "\\d+\\.\\d+\\.\\d+")
-if (compareVersion(conda_build_version_num, "3.11.0") == -1) {
-  stop("You need to install conda-build 3.11.0 or later.",
+if (compareVersion(conda_build_version_num, "3.17.2") == -1) {
+  stop("You need to install conda-build 3.17.2 or later.",
        "\nCurrently installed version: ", conda_build_version_num,
        "\nRun: conda install -c conda-forge conda-build")
 }
@@ -102,20 +102,6 @@ for (fn in packages) {
 
   # Remove "+ file LICENSE" or "+ file LICENCE"
   meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
-
-  # Add path to copy GPL-3 license shipped with r-base
-  gpl3 <- c(
-    "  license_family: GPL3",
-    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-3'")
-  meta_new <- str_replace(meta_new, "  license_family: GPL3",
-                          paste(gpl3, collapse = "\n"))
-
-  # Add path to copy GPL-2 license shipped with r-base
-  gpl2 <- c(
-    "  license_family: GPL2",
-    "  license_file: '{{ environ[\"PREFIX\"] }}/lib/R/share/licenses/GPL-2'")
-  meta_new <- str_replace(meta_new, "  license_family: GPL2",
-                          paste(gpl2, collapse = "\n"))
 
   # Add maintainers listed in extra.yaml
   maintainers <- readLines("extra.yaml")
