@@ -43,9 +43,9 @@ if not re.match('^3.+', conda_build_version):
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
 
-v_min = StrictVersion('3.11.0')
+v_min = StrictVersion('3.17.2')
 if StrictVersion(conda_build_version) < v_min:
-    sys.stderr.write('You need to install conda-build 3.11.0 or later.\n')
+    sys.stderr.write('You need to install conda-build 3.17.2 or later.\n')
     sys.stderr.write('Currently installed version: %s\n'%(conda_build_version))
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
@@ -84,12 +84,6 @@ for fn in packages:
 
     # Edit meta.yaml -------------------------------------------------------------
 
-    # license_file text for GPL'd packages
-    gpl2 = ['  license_family: GPL2',
-            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2\'']
-    gpl3 = ['  license_family: GPL3',
-            '  license_file: \'{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3\'']
-
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
         meta_new = []
@@ -118,12 +112,6 @@ for fn in packages:
                 line = line.replace("    - {{posix}}zip               # [win]", "")
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
-
-            # Add path to copy GPL-2 license shipped with r-base
-            line = line.replace('  license_family: GPL2', '\n'.join(gpl2))
-
-            # Add path to copy GPL-3 license shipped with r-base
-            line = line.replace('  license_family: GPL3', '\n'.join(gpl3))
 
             # Add a blank line before a new section
             line = re.sub('^[a-z]', '\n\g<0>', line)
