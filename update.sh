@@ -68,7 +68,7 @@ while read -r p; do
   fi
 
   echo "### Create a PR from $1/$p-feedstock/update to conda-forge/$p-feedstock/master"
-  python -mwebbrowser "https://github.com/$1/$p-feedstock"
+  python -mwebbrowser "https://github.com/conda-forge/$p-feedstock/compare/master...$1:update"
 
   read -n1 -r -p "Press any key to continue..." </dev/tty
 
