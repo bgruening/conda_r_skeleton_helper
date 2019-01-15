@@ -89,17 +89,6 @@ for (fn in packages) {
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
 
-  # If it is a noarch recipe, remove {{posix}}zip from build section.
-  #
-  # Motivation: linter fails if selector detected in requirements section of a
-  # noarch recipe.
-  is_noarch <- any(str_detect(meta_new, "  noarch: generic"))
-  if (is_noarch) {
-    meta_new <- str_replace(meta_new,
-                            "    - \\{\\{posix\\}\\}zip               # \\[win\\]",
-                            "")
-  }
-
   # Remove "+ file LICENSE" or "+ file LICENCE"
   meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
 

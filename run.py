@@ -87,7 +87,6 @@ for fn in packages:
     meta_fname = os.path.join(fn, 'meta.yaml')
     with open(meta_fname, 'r') as f:
         meta_new = []
-        is_noarch = False
         is_cran_metadata = False
         cran_metadata = ['\n']
 
@@ -102,14 +101,6 @@ for fn in packages:
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
 
-            # If it is a noarch recipe, remove {{posix}}zip from build section.
-            #
-            # Motivation: linter fails if selector detected in requirements section of a
-            # noarch recipe.
-            if "  noarch: generic" in line:
-                is_noarch = True
-            if is_noarch:
-                line = line.replace("    - {{posix}}zip               # [win]", "")
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
