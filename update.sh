@@ -29,15 +29,14 @@ then
   exit 1
 fi
 
-read -n1 -r -p "Install/Update conda-build and conda-smithy? [yn]" updatetools </dev/tty
-if [[ $updatetools = y ]] ; then
-  conda install -c conda-forge conda-build conda-smithy
-fi
-
 python run.py
 
 while read -r p; do
   echo "########### Package: $p"
+
+  echo "### Ensure forked"
+  python -mwebbrowser "https://github.com/conda-forge/$p-feedstock/"
+  read -n1 -r -p "Forked? Press any key to continue..." </dev/tty
 
   echo "### Cloning the forked feedstock"
   git clone "https://github.com/$1/$p-feedstock.git"
@@ -52,7 +51,7 @@ while read -r p; do
   cp "$p/"* "$p-feedstock/recipe/"
 
   echo "### Open 'git gui' for creation of the update commit"
-  (cd "$p-feedstock" && git gui)
+  (cd "$p-feedstock" && git add . && git gui)
 
   echo "### Do the conda-smithy rerender"
   (cd "$p-feedstock" && conda-smithy rerender -c auto)
@@ -60,12 +59,8 @@ while read -r p; do
   echo "### Show last 2 commits and possible remotes"
   (cd "$p-feedstock" && git log -n 2 && git remote -v)
 
-  echo "### Push?"
-  read -n1 -r -p "Push to origin/update? [yn]" answer </dev/tty
-  if [[ $answer = y ]] ; then
-    # Add '--force', to always overwrite existing update branches
-    (cd "$p-feedstock" && git push origin update)
-  fi
+  echo "### Pushing"
+  (cd "$p-feedstock" && git push origin update -f)
 
   echo "### Create a PR from $1/$p-feedstock/update to conda-forge/$p-feedstock/master"
   python -mwebbrowser "https://github.com/conda-forge/$p-feedstock/compare/master...$1:update"
