@@ -133,7 +133,7 @@ for fn in packages:
                 continue
 
             # Remove line that filters DESCRIPTION with grep
-            if re.match('.*grep -v \'\\^Priority: \' DESCRIPTION.old > DESCRIPTION', line):
+            if re.match('.*grep -va* \'\\^Priority: \' DESCRIPTION.old > DESCRIPTION', line):
                 continue
 
             # Remove comments (but not shebang line)
