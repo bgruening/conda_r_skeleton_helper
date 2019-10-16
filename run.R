@@ -128,7 +128,7 @@ for (fn in packages) {
 
   # Remove line that filters DESCRIPTION with grep
   build_new <- build_new[!str_detect(build_new,
-                                     "grep -v '\\^Priority: ' DESCRIPTION.old > DESCRIPTION")]
+                                     "grep -va? '\\^Priority: ' DESCRIPTION.old > DESCRIPTION")]
 
   # Remove comments (but not shebang line)
   build_new <- build_new[!str_detect(build_new, "^#\\s")]
