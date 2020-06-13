@@ -111,6 +111,9 @@ for (fn in packages) {
     meta_new <- meta_new[-(sha256_line - 1)]
   }
 
+  # Space at beginning and end of jinja variable references
+  meta_new <- str_replace_all(meta_new, '\\{\\{ *([^} ]+) *\\}\\}', '{{ \\1 }}')
+
   # Add back CRAN metadata
   meta_new <- c(meta_new, "", cran_metadata)
 

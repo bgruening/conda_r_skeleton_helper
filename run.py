@@ -107,6 +107,9 @@ for fn in packages:
             # Add a blank line before a new section
             line = re.sub('^[a-z]', '\n\g<0>', line)
 
+            # Space at beginning and end of jinja variable references
+            line = re.sub('\{\{ *([^} ]+) *\}\}', '{{ \g<1> }}', line)
+
             meta_new += line
 
     # Add maintainers listed in extra.yaml
