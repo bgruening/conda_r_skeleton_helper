@@ -23,7 +23,7 @@ Either of these scripts can be run on Linux, macOS, and Windows.
 
 ## Using the script
 
-1. Put the package name(s) in `packages.txt` in the form of `r-foobar`
+1. Put the package name(s) in `packages.txt` in the form of `r-foobar` (lowercase)
 1. Add your GitHub username to the list of maintainers in `extra.yaml`
 1. Execute the helper script using one of the following methods:
 
