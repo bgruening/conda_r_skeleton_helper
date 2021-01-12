@@ -80,7 +80,7 @@ for fn in packages:
         continue
 
     # Create the recipe using the cran skeleton
-    sp.run(['conda', 'skeleton', 'cran', '--use-noarch-generic', fn])
+    sp.run(['conda', 'skeleton', 'cran', '--use-noarch-generic', '--add-cross-r-base', fn])
 
     # Edit meta.yaml -------------------------------------------------------------
 
