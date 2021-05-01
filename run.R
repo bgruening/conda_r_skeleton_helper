@@ -92,6 +92,9 @@ for (fn in packages) {
   # Remove "+ file LICENSE" or "+ file LICENCE"
   meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
 
+  # Changing GLP-2 to GPL-2.0-or-later
+  meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-or-later")
+
   # Add maintainers listed in extra.yaml
   maintainers <- readLines("extra.yaml")
   meta_new <- c(meta_new, maintainers)

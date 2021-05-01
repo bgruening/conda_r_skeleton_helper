@@ -104,6 +104,9 @@ for fn in packages:
             # Remove '+ file LICENSE' or '+ file LICENCE'
             line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
+            # Changing GLP-2 to GPL-2.0-or-later
+            line = re.sub('license: GPL-2$', 'license: GPL-2.0-or-later', line)
+
             # Add a blank line before a new section
             line = re.sub('^[a-z]', '\n\g<0>', line)
 
