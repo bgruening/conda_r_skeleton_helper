@@ -60,6 +60,13 @@ if (!file.exists("extra.yaml")) {
 
 # Process packages -------------------------------------------------------------
 
+SPDX_url = 'https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions'
+SPDX_licenses = c('Apache-2.0', 'Apache-2.0 WITH LLVM-exception',
+                  'BSD-3-Clause', 'BSD-3-Clause OR MIT', 'GPL-2.0-or-later',
+                  'LGPL-2.0-only OR GPL-2.0-only', 'LicenseRef-HDF5', 'MIT',
+                  'MIT AND BSD-2-Clause', 'PSF-2.0')
+SPDX_regex = "^\\s+license: +(.+)\\s*"
+
 packages <- readLines("packages.txt")
 
 for (fn in packages) {
@@ -94,6 +101,16 @@ for (fn in packages) {
 
   # Changing GLP-2 to GPL-2.0-or-later
   meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-or-later")
+
+  # Checking for valid license
+  for(line in meta_new){
+    if(grepl(SPDX_regex, line)){
+      license <- str_replace(line, SPDX_regex, '\\1')
+      if(! license %in% SPDX_licenses){
+        stop(license, " license not valid. See ", SPDX_url)
+      }
+    }
+  }
 
   # Add maintainers listed in extra.yaml
   maintainers <- readLines("extra.yaml")
