@@ -61,10 +61,7 @@ if (!file.exists("extra.yaml")) {
 # Process packages -------------------------------------------------------------
 
 SPDX_url = 'https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions'
-SPDX_licenses = c('Apache-2.0', 'Apache-2.0 WITH LLVM-exception',
-                  'BSD-3-Clause', 'BSD-3-Clause OR MIT', 'GPL-2.0-or-later',
-                  'LGPL-2.0-only OR GPL-2.0-only', 'LicenseRef-HDF5', 'MIT',
-                  'MIT AND BSD-2-Clause', 'PSF-2.0')
+SPDX_licenses = scan("spdx-licenses.txt", what = "character", quiet = TRUE)
 SPDX_regex = "^\\s+license: +(.+)\\s*"
 
 packages <- readLines("packages.txt")
