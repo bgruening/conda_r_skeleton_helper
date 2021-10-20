@@ -118,8 +118,8 @@ for fn in packages:
             if SPDX_regex.match(line):
                 license = SPDX_regex.match(line).group(1)
                 if not license in SPDX_licenses:
-                    msg = '"{}" license not valid. See {}'
-                    raise ValueError(msg.format(license, SPDX_url))
+                    msg = 'Warning: "{}" license not valid. See {}\n'
+                    sys.stderr.write(msg.format(license, SPDX_url))
 
             # Add a blank line before a new section
             line = re.sub('^[a-z]', '\n\g<0>', line)

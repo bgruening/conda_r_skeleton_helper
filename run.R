@@ -107,7 +107,8 @@ for (fn in packages) {
     if(grepl(SPDX_regex, line)){
       license <- str_replace(line, SPDX_regex, '\\1')
       if(! license %in% SPDX_licenses){
-        stop(license, " license not valid. See ", SPDX_url)
+        warning(license, " license not valid. See ", SPDX_url,
+                call. = FALSE, immediate. = TRUE)
       }
     }
   }
