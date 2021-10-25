@@ -46,7 +46,7 @@ if not re.match('^3.+', conda_build_version):
 v_min = StrictVersion('3.17.2')
 if StrictVersion(conda_build_version) < v_min:
     sys.stderr.write('You need to install conda-build 3.17.2 or later.\n')
-    sys.stderr.write('Currently installed version: %s\n'%(conda_build_version))
+    sys.stderr.write(f'Currently installed version: {conda_build_version}\n')
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
 
@@ -65,10 +65,8 @@ if not os.path.isfile('extra.yaml'):
 # Process packages -------------------------------------------------------------
 
 SPDX_url = 'https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions'
-SPDX_licenses = {'Apache-2.0', 'Apache-2.0 WITH LLVM-exception',
-                 'BSD-3-Clause', 'BSD-3-Clause OR MIT', 'GPL-2.0-or-later',
-                 'LGPL-2.0-only OR GPL-2.0-only', 'LicenseRef-HDF5', 'MIT',
-                 'MIT AND BSD-2-Clause', 'PSF-2.0'}
+with open('spdx-licenses.txt') as f:
+    SPDX_licenses = [line.strip() for line in f]
 SPDX_regex = re.compile(r'^\s+license: +(.+)\s*')
 
 with open('packages.txt', 'r') as f:
@@ -80,10 +78,10 @@ for fn in packages:
     if not fn:
         continue
 
-    sys.stdout.write('Processing %s\n'%(fn))
+    sys.stdout.write(f'Processing {fn}\n')
 
     if os.path.exists(fn):
-        sys.stderr.write('Skipping %s b/c directory already exists\n'%(fn))
+        sys.stderr.write(f'Skipping {fn} b/c directory already exists\n')
         continue
 
     # Create the recipe using the cran skeleton
@@ -118,8 +116,8 @@ for fn in packages:
             if SPDX_regex.match(line):
                 license = SPDX_regex.match(line).group(1)
                 if not license in SPDX_licenses:
-                    msg = '"{}" license not valid. See {}'
-                    raise ValueError(msg.format(license, SPDX_url))
+                    msg = f'Warning: "{license}" license not valid. See {SPDX_url}\n'
+                    sys.stderr.write(msg)
 
             # Add a blank line before a new section
             line = re.sub('^[a-z]', '\n\g<0>', line)
