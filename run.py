@@ -66,8 +66,7 @@ if not os.path.isfile('extra.yaml'):
 
 SPDX_url = 'https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions'
 with open('spdx-licenses.txt') as f:
-    SPDX_licenses = f.readlines()
-    SPDX_licenses = [x.strip() for x in SPDX_licenses]
+    SPDX_licenses = [line.strip() for line in f]
 SPDX_regex = re.compile(r'^\s+license: +(.+)\s*')
 
 with open('packages.txt', 'r') as f:
