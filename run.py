@@ -46,7 +46,7 @@ if not re.match('^3.+', conda_build_version):
 v_min = StrictVersion('3.17.2')
 if StrictVersion(conda_build_version) < v_min:
     sys.stderr.write('You need to install conda-build 3.17.2 or later.\n')
-    sys.stderr.write('Currently installed version: %s\n'%(conda_build_version))
+    sys.stderr.write(f'Currently installed version: {conda_build_version}\n')
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
 
@@ -78,10 +78,10 @@ for fn in packages:
     if not fn:
         continue
 
-    sys.stdout.write('Processing %s\n'%(fn))
+    sys.stdout.write(f'Processing {fn}\n')
 
     if os.path.exists(fn):
-        sys.stderr.write('Skipping %s b/c directory already exists\n'%(fn))
+        sys.stderr.write(f'Skipping {fn} b/c directory already exists\n')
         continue
 
     # Create the recipe using the cran skeleton
@@ -116,8 +116,8 @@ for fn in packages:
             if SPDX_regex.match(line):
                 license = SPDX_regex.match(line).group(1)
                 if not license in SPDX_licenses:
-                    msg = 'Warning: "{}" license not valid. See {}\n'
-                    sys.stderr.write(msg.format(license, SPDX_url))
+                    msg = f'Warning: "{license}" license not valid. See {SPDX_url}\n'
+                    sys.stderr.write(msg)
 
             # Add a blank line before a new section
             line = re.sub('^[a-z]', '\n\g<0>', line)
