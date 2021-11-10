@@ -40,8 +40,8 @@ if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
 
 conda_build_version_num <- str_extract(conda_build_version,
                                        "\\d+\\.\\d+\\.\\d+")
-if (compareVersion(conda_build_version_num, "3.17.2") == -1) {
-  stop("You need to install conda-build 3.17.2 or later.",
+if (compareVersion(conda_build_version_num, "3.18.10") == -1) {
+  stop("You need to install conda-build 3.18.10 or later.",
        "\nCurrently installed version: ", conda_build_version_num,
        "\nRun: conda install -c conda-forge conda-build")
 }
@@ -92,9 +92,6 @@ for (fn in packages) {
 
   # Remove comments
   meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
-
-  # Remove "+ file LICENSE" or "+ file LICENCE"
-  meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
 
   # Changing GLP-2 to GPL-2.0-or-later
   meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-or-later")

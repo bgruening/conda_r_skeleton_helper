@@ -43,9 +43,9 @@ if not re.match('^3.+', conda_build_version):
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
 
-v_min = StrictVersion('3.17.2')
+v_min = StrictVersion('3.18.10')
 if StrictVersion(conda_build_version) < v_min:
-    sys.stderr.write('You need to install conda-build 3.17.2 or later.\n')
+    sys.stderr.write('You need to install conda-build 3.18.10 or later.\n')
     sys.stderr.write(f'Currently installed version: {conda_build_version}\n')
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
@@ -105,9 +105,6 @@ for fn in packages:
             # Remove comments and blank lines
             if re.match('^\s*#', line) or re.match('^\n$', line):
                 continue
-
-            # Remove '+ file LICENSE' or '+ file LICENCE'
-            line = re.sub(' [+|] file LICEN[SC]E', '', line)
 
             # Changing GLP-2 to GPL-2.0-or-later
             line = re.sub('license: GPL-2$', 'license: GPL-2.0-or-later', line)

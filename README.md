@@ -8,7 +8,7 @@ process. Also, please only submit one recipe per Pull Request.
 
 ## Installation
 
-You will need conda and conda-build 3 (3.17.2+) installed:
+You will need conda and conda-build 3 (3.18.10+) installed:
 
 ```
 conda install -c conda-forge conda-build
