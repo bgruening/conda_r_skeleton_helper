@@ -43,9 +43,9 @@ if not re.match('^3.+', conda_build_version):
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
 
-v_min = StrictVersion('3.18.10')
+v_min = StrictVersion('3.21.0')
 if StrictVersion(conda_build_version) < v_min:
-    sys.stderr.write('You need to install conda-build 3.18.10 or later.\n')
+    sys.stderr.write('You need to install conda-build 3.21.0 or later.\n')
     sys.stderr.write(f'Currently installed version: {conda_build_version}\n')
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)

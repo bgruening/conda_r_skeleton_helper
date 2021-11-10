@@ -40,8 +40,8 @@ if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
 
 conda_build_version_num <- str_extract(conda_build_version,
                                        "\\d+\\.\\d+\\.\\d+")
-if (compareVersion(conda_build_version_num, "3.18.10") == -1) {
-  stop("You need to install conda-build 3.18.10 or later.",
+if (compareVersion(conda_build_version_num, "3.21.0") == -1) {
+  stop("You need to install conda-build 3.21.0 or later.",
        "\nCurrently installed version: ", conda_build_version_num,
        "\nRun: conda install -c conda-forge conda-build")
 }
