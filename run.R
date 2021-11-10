@@ -40,8 +40,8 @@ if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
 
 conda_build_version_num <- str_extract(conda_build_version,
                                        "\\d+\\.\\d+\\.\\d+")
-if (compareVersion(conda_build_version_num, "3.21.0") == -1) {
-  stop("You need to install conda-build 3.21.0 or later.",
+if (compareVersion(conda_build_version_num, "3.21.6") == -1) {
+  stop("You need to install conda-build 3.21.6 or later.",
        "\nCurrently installed version: ", conda_build_version_num,
        "\nRun: conda install -c conda-forge conda-build")
 }
@@ -77,7 +77,8 @@ for (fn in packages) {
   }
 
   # Create the recipe using the cran skeleton
-  system2("conda", args = c("skeleton", "cran", "--use-noarch-generic", "--add-cross-r-base", fn))
+  system2("conda", args = c("skeleton", "cran", "--use-noarch-generic",
+                            "--add-cross-r-base", "--no-comments", fn))
 
   # Edit meta.yaml -------------------------------------------------------------
 
@@ -86,12 +87,11 @@ for (fn in packages) {
   meta_new <- meta_raw
 
   # Extract CRAN metadata
-  cran_metadata_start <- which(meta_new == "# The original CRAN metadata for this package was:")
-  cran_metadata <- meta_new[cran_metadata_start:length(meta_new)]
+  cran_metadata_start <- str_which(meta_new, "^# Package: ")
+  cran_metadata_lines <- cran_metadata_start:length(meta_new)
+  cran_metadata <- meta_new[cran_metadata_lines]
   cran_metadata <- cran_metadata[str_detect(cran_metadata, "^#\\s[A-Z]\\S+:")]
-
-  # Remove comments
-  meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
+  meta_new <- meta_new[-cran_metadata_lines]
 
   # Changing GLP-2 to GPL-2.0-or-later
   meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-or-later")
@@ -147,9 +147,6 @@ for (fn in packages) {
   # Remove line that filters DESCRIPTION with grep
   build_new <- build_new[!str_detect(build_new,
                                      "grep -va? '\\^Priority: ' DESCRIPTION.old > DESCRIPTION")]
-
-  # Remove comments (but not shebang line)
-  build_new <- build_new[!str_detect(build_new, "^#\\s")]
 
   # Remove empty lines
   build_new <- build_new[!str_detect(build_new, "^$")]

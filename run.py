@@ -43,9 +43,9 @@ if not re.match('^3.+', conda_build_version):
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
 
-v_min = StrictVersion('3.21.0')
+v_min = StrictVersion('3.21.6')
 if StrictVersion(conda_build_version) < v_min:
-    sys.stderr.write('You need to install conda-build 3.21.0 or later.\n')
+    sys.stderr.write('You need to install conda-build 3.21.6 or later.\n')
     sys.stderr.write(f'Currently installed version: {conda_build_version}\n')
     sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
     sys.exit(1)
@@ -85,7 +85,8 @@ for fn in packages:
         continue
 
     # Create the recipe using the cran skeleton
-    sp.run(['conda', 'skeleton', 'cran', '--use-noarch-generic', '--add-cross-r-base', fn])
+    sp.run(['conda', 'skeleton', 'cran', '--use-noarch-generic',
+            '--add-cross-r-base', '--no-comments', fn])
 
     # Edit meta.yaml -------------------------------------------------------------
 
@@ -97,13 +98,14 @@ for fn in packages:
 
         for line in f:
             # Extract CRAN metadata
-            if "original CRAN metadata" in line:
+            if line[:11] == '# Package: ':
                 is_cran_metadata = True
             if is_cran_metadata and re.match('^#\s[A-Z]\S+:', line):
                 cran_metadata += line
+                continue
 
-            # Remove comments and blank lines
-            if re.match('^\s*#', line) or re.match('^\n$', line):
+            # Remove blank lines
+            if re.match('^\n$', line):
                 continue
 
             # Changing GLP-2 to GPL-2.0-or-later
@@ -149,10 +151,6 @@ for fn in packages:
 
             # Remove line that filters DESCRIPTION with grep
             if re.match('.*grep -va* \'\\^Priority: \' DESCRIPTION.old > DESCRIPTION', line):
-                continue
-
-            # Remove comments (but not shebang line)
-            if re.match('^#\\s', line):
                 continue
 
             # Remove empty lines
