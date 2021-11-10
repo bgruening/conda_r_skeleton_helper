@@ -111,19 +111,14 @@ for (fn in packages) {
   maintainers <- readLines("extra.yaml")
   meta_new <- c(meta_new, maintainers)
 
-  # Remove any consecutive empty lines
-  meta_new <- rle(meta_new)$values
+  # Remove blank lines
+  blank_lines <- meta_new == ""
+  meta_new <- meta_new[!blank_lines]
 
-  # Remove the annoying blank line in the jinja templating section
-  jinja_version_line <- str_which(meta_new, "set version")
-  if (meta_new[jinja_version_line + 1] == "") {
-    meta_new <- meta_new[-(jinja_version_line + 1)]
-  }
-
-  # Remove the annoying blank line between url and sha256
-  sha256_line <- str_which(meta_new, "^  sha256")
-  if (meta_new[sha256_line - 1] == "") {
-    meta_new <- meta_new[-(sha256_line - 1)]
+  # Add a blank line before a new section
+  sections <- str_which(meta_new, "^[a-z]")
+  for (s in rev(sections)) {
+    meta_new <- c(meta_new[1:(s - 1)], "", meta_new[s:length(meta_new)])
   }
 
   # Space at beginning and end of jinja variable references
