@@ -40,8 +40,8 @@ if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
 
 conda_build_version_num <- str_extract(conda_build_version,
                                        "\\d+\\.\\d+\\.\\d+")
-if (compareVersion(conda_build_version_num, "3.17.2") == -1) {
-  stop("You need to install conda-build 3.17.2 or later.",
+if (compareVersion(conda_build_version_num, "3.21.6") == -1) {
+  stop("You need to install conda-build 3.21.6 or later.",
        "\nCurrently installed version: ", conda_build_version_num,
        "\nRun: conda install -c conda-forge conda-build")
 }
@@ -77,7 +77,8 @@ for (fn in packages) {
   }
 
   # Create the recipe using the cran skeleton
-  system2("conda", args = c("skeleton", "cran", "--use-noarch-generic", "--add-cross-r-base", fn))
+  system2("conda", args = c("skeleton", "cran", "--use-noarch-generic",
+                            "--add-cross-r-base", "--no-comments", fn))
 
   # Edit meta.yaml -------------------------------------------------------------
 
@@ -86,15 +87,11 @@ for (fn in packages) {
   meta_new <- meta_raw
 
   # Extract CRAN metadata
-  cran_metadata_start <- which(meta_new == "# The original CRAN metadata for this package was:")
-  cran_metadata <- meta_new[cran_metadata_start:length(meta_new)]
+  cran_metadata_start <- str_which(meta_new, "^# Package: ")
+  cran_metadata_lines <- cran_metadata_start:length(meta_new)
+  cran_metadata <- meta_new[cran_metadata_lines]
   cran_metadata <- cran_metadata[str_detect(cran_metadata, "^#\\s[A-Z]\\S+:")]
-
-  # Remove comments
-  meta_new <- meta_new[!str_detect(meta_new, "^\\s*#")]
-
-  # Remove "+ file LICENSE" or "+ file LICENCE"
-  meta_new <- str_replace(meta_new, " [+|] file LICEN[SC]E", "")
+  meta_new <- meta_new[-cran_metadata_lines]
 
   # Changing GLP-2 to GPL-2.0-or-later
   meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-or-later")
@@ -114,19 +111,14 @@ for (fn in packages) {
   maintainers <- readLines("extra.yaml")
   meta_new <- c(meta_new, maintainers)
 
-  # Remove any consecutive empty lines
-  meta_new <- rle(meta_new)$values
+  # Remove blank lines
+  blank_lines <- meta_new == ""
+  meta_new <- meta_new[!blank_lines]
 
-  # Remove the annoying blank line in the jinja templating section
-  jinja_version_line <- str_which(meta_new, "set version")
-  if (meta_new[jinja_version_line + 1] == "") {
-    meta_new <- meta_new[-(jinja_version_line + 1)]
-  }
-
-  # Remove the annoying blank line between url and sha256
-  sha256_line <- str_which(meta_new, "^  sha256")
-  if (meta_new[sha256_line - 1] == "") {
-    meta_new <- meta_new[-(sha256_line - 1)]
+  # Add a blank line before a new section
+  sections <- str_which(meta_new, "^[a-z]")
+  for (s in rev(sections)) {
+    meta_new <- c(meta_new[1:(s - 1)], "", meta_new[s:length(meta_new)])
   }
 
   # Space at beginning and end of jinja variable references
@@ -150,9 +142,6 @@ for (fn in packages) {
   # Remove line that filters DESCRIPTION with grep
   build_new <- build_new[!str_detect(build_new,
                                      "grep -va? '\\^Priority: ' DESCRIPTION.old > DESCRIPTION")]
-
-  # Remove comments (but not shebang line)
-  build_new <- build_new[!str_detect(build_new, "^#\\s")]
 
   # Remove empty lines
   build_new <- build_new[!str_detect(build_new, "^$")]
