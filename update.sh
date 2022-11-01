@@ -44,8 +44,8 @@ while read -r p; do
   echo "### Adding conda-forge remote"
   (cd "$p-feedstock" && git remote add cf "https://github.com/conda-forge/$p-feedstock.git")
 
-  echo "### Checkout conda-forge master as starting point, the fork could be outdated"
-  (cd "$p-feedstock" && git remote update && git checkout cf/master -b update)
+  echo "### Checkout conda-forge main as starting point, the fork could be outdated"
+  (cd "$p-feedstock" && git remote update && git checkout cf/main -b update)
 
   echo "### Copy files from skeleton run into cloned feedstock"
   cp "$p/"* "$p-feedstock/recipe/"
@@ -62,8 +62,8 @@ while read -r p; do
   echo "### Pushing"
   (cd "$p-feedstock" && git push origin update -f)
 
-  echo "### Create a PR from $1/$p-feedstock/update to conda-forge/$p-feedstock/master"
-  python -mwebbrowser "https://github.com/conda-forge/$p-feedstock/compare/master...$1:update"
+  echo "### Create a PR from $1/$p-feedstock/update to conda-forge/$p-feedstock/main"
+  python -mwebbrowser "https://github.com/conda-forge/$p-feedstock/compare/main...$1:update"
 
   read -n1 -r -p "Press any key to continue..." </dev/tty
 
