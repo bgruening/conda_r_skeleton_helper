@@ -78,7 +78,7 @@ for (fn in packages) {
 
   # Create the recipe using the cran skeleton
   system2("conda", args = c("skeleton", "cran", "--use-noarch-generic",
-                            "--add-cross-r-base", "--no-comments", fn))
+                            "--add-cross-r-base", "--no-comments", "--allow-archived", fn))
 
   # Edit meta.yaml -------------------------------------------------------------
 
