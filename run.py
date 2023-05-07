@@ -108,8 +108,8 @@ for fn in packages:
             if re.match('^\n$', line):
                 continue
 
-            # Changing GLP-2 to GPL-2.0-or-later
-            line = re.sub('license: GPL-2$', 'license: GPL-2.0-or-later', line)
+            # Changing GPL-2 to GPL-2.0-only
+            line = re.sub('license: GPL-2$', 'license: GPL-2.0-only', line)
 
             # Checking for valid SPDX license
             if SPDX_regex.match(line):

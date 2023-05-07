@@ -93,8 +93,8 @@ for (fn in packages) {
   cran_metadata <- cran_metadata[str_detect(cran_metadata, "^#\\s[A-Z]\\S+:")]
   meta_new <- meta_new[-cran_metadata_lines]
 
-  # Changing GLP-2 to GPL-2.0-or-later
-  meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-or-later")
+  # Changing GPL-2 to GPL-2.0-only
+  meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-only")
 
   # Checking for valid license
   for(line in meta_new){
