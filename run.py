@@ -38,11 +38,6 @@ if not shutil.which('conda-build'):
 import conda_build
 
 conda_build_version = conda_build.__version__
-if not re.match('^3.+', conda_build_version):
-    sys.stderr.write('You need to install conda-build 3 from the conda-forge channel\n')
-    sys.stderr.write('Run: conda install -c conda-forge conda-build\n')
-    sys.exit(1)
-
 v_min = StrictVersion('3.21.6')
 if StrictVersion(conda_build_version) < v_min:
     sys.stderr.write('You need to install conda-build 3.21.6 or later.\n')
