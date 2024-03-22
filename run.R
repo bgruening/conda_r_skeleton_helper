@@ -33,11 +33,6 @@ if (conda_build == "") {
 
 conda_build_version <- system2("conda", args = c("build", "--version"),
                                stdout = TRUE)
-if (!grepl(pattern = "conda-build 3.+", conda_build_version)) {
-  stop("You need to install conda-build 3 from the conda-forge channel",
-       "\nRun: conda install -c conda-forge conda-build")
-}
-
 conda_build_version_num <- str_extract(conda_build_version,
                                        "\\d+\\.\\d+\\.\\d+")
 if (compareVersion(conda_build_version_num, "3.21.6") == -1) {
