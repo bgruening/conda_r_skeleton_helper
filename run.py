@@ -92,6 +92,18 @@ for fn in packages:
         cran_metadata = ['\n']
 
         for line in f:
+            # UCRT changes
+            line = line.replace("{{ native }}", "")
+            line = line.replace("{{native}}", "")
+            if "merge_build_host: " in line:
+                continue
+            if "- gcc-libs" in line:
+                continue
+            if "- posix" in line:
+                continue
+            if "set native =" in line:
+                continue
+            
             # Extract CRAN metadata
             if line[:11] == '# Package: ':
                 is_cran_metadata = True
