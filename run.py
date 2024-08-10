@@ -90,6 +90,7 @@ for fn in packages:
         meta_new = []
         is_cran_metadata = False
         cran_metadata = ['\n']
+        is_rpaths = False
 
         for line in f:
             # UCRT changes
@@ -110,6 +111,24 @@ for fn in packages:
             if is_cran_metadata and re.match('^#\s[A-Z]\S+:', line):
                 cran_metadata += line
                 continue
+            
+            # Inject missing_dso_whitelist
+            # NB: this can be removed if merge of https://github.com/conda/conda-build/pull/4786
+            if re.match('^  rpaths:$', line):
+                is_rpaths = True
+                meta_new += line
+                continue
+            elif is_rpaths:
+                if re.match('^\s+-.*', line):
+                    meta_new += line
+                    continue
+                else:
+                    is_rpaths = False
+                    meta_new += "  missing_dso_whitelist:\n"
+                    meta_new += "    - '*/R.dll'        # [win]\n"
+                    meta_new += "    - '*/Rblas.dll'    # [win]\n"
+                    meta_new += "    - '*/Rlapack.dll'  # [win]\n"
+                    continue
 
             # Remove blank lines
             if re.match('^\n$', line):

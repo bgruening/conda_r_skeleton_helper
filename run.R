@@ -96,6 +96,18 @@ for (fn in packages) {
   cran_metadata <- cran_metadata[str_detect(cran_metadata, "^#\\s[A-Z]\\S+:")]
   meta_new <- meta_new[-cran_metadata_lines]
 
+  # Inject missing_dso_whitelist
+  # NB: this can be removed if merge of https://github.com/conda/conda-build/pull/4786
+  idx_rpaths_start <- which(str_detect(meta_new, "  rpaths:"))
+  idx_rpaths_end <- which(meta_new == "")
+  idx_rpaths_end <- idx_rpaths_end[idx_rpaths_end > idx_rpaths_start][1]
+  meta_new <- c(meta_new[seq(idx_rpaths_end - 1)],
+                "  missing_dso_whitelist:",
+                "    - '*/R.dll'        # [win]",
+                "    - '*/Rblas.dll'    # [win]",
+                "    - '*/Rlapack.dll'  # [win]",
+                meta_new[seq(idx_rpaths_end, length(meta_new))])
+  
   # Changing GPL-2 to GPL-2.0-only
   meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-only")
 
