@@ -93,6 +93,21 @@ for fn in packages:
         is_rpaths = False
 
         for line in f:
+            # UCRT changes
+            line = line.replace("{{ native }}", "")
+            line = line.replace("{{native}}", "")
+            line = line.replace("{{posix}}pkg-config", "pkg-config")
+            line = line.replace("{{ posix }}pkg-config", "pkg-config")
+            line = line.replace("- m2w64-pkg-config", "- pkg-config")
+            line = line.replace("- m2w64-toolchain", "- {{ compiler('m2w64_c') }}")
+            line = line.replace("- posix", "- m2-base")
+            if "merge_build_host: " in line:
+                continue
+            if "- gcc-libs" in line:
+                continue
+            if "set native =" in line:
+                continue
+            
             # Extract CRAN metadata
             if line[:11] == '# Package: ':
                 is_cran_metadata = True
