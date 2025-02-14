@@ -84,9 +84,13 @@ for (fn in packages) {
   # UCRT changes
   meta_new <- str_replace(meta_new, fixed("{{ native }}"), "")
   meta_new <- str_replace(meta_new, fixed("{{native}}"), "")
+  meta_new <- str_replace(meta_new, fixed("{{ posix }}pkg-config"), "pkg-config")
+  meta_new <- str_replace(meta_new, fixed("{{posix}}pkg-config"), "pkg-config")
+  meta_new <- str_replace(meta_new, fixed("- m2w64-pkg-config"), "pkg-config")
+  meta_new <- str_replace(meta_new, fixed("- m2w64-toolchain"), "- {{ compiler('m2w64_c') }}")
+  meta_new <- str_replace(meta_new, fixed("- posix"), "- m2-base")
   meta_new <- meta_new[!str_detect(meta_new, fixed("merge_build_host: "))]
   meta_new <- meta_new[!str_detect(meta_new, fixed("- gcc-libs"))]
-  meta_new <- meta_new[!str_detect(meta_new, fixed("- posix"))]
   meta_new <- meta_new[!str_detect(meta_new, fixed("set native ="))]
   
   # Extract CRAN metadata

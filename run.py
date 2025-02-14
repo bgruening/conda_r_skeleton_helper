@@ -96,11 +96,14 @@ for fn in packages:
             # UCRT changes
             line = line.replace("{{ native }}", "")
             line = line.replace("{{native}}", "")
+            line = line.replace("{{posix}}pkg-config", "pkg-config")
+            line = line.replace("{{ posix }}pkg-config", "pkg-config")
+            line = line.replace("- m2w64-pkg-config", "- pkg-config")
+            line = line.replace("- m2w64-toolchain", "- {{ compiler('m2w64_c') }}")
+            line = line.replace("- posix", "- m2-base")
             if "merge_build_host: " in line:
                 continue
             if "- gcc-libs" in line:
-                continue
-            if "- posix" in line:
                 continue
             if "set native =" in line:
                 continue
