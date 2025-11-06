@@ -114,6 +114,8 @@ for (fn in packages) {
   
   # Changing GPL-2 to GPL-2.0-only
   meta_new <- str_replace(meta_new, "license: GPL-2$", "license: GPL-2.0-only")
+  # Changing GPL-3 to GPL-3.0-only
+  meta_new <- str_replace(meta_new, "license: GPL-3$", "license: GPL-3.0-only")
 
   # Checking for valid license
   for(line in meta_new){
