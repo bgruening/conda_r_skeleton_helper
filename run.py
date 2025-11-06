@@ -139,6 +139,9 @@ for fn in packages:
 
             # Changing GPL-2 to GPL-2.0-only
             line = re.sub('license: GPL-2$', 'license: GPL-2.0-only', line)
+	    # Changing GPL-3 to GPL-3.0-only
+            line = re.sub('license: GPL-3$', 'license: GPL-3.0-only', line)
+
 
             # Checking for valid SPDX license
             if SPDX_regex.match(line):
