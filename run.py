@@ -112,25 +112,25 @@ for fn in packages:
             if line[:11] == '# Package: ':
                 is_cran_metadata = True
             if is_cran_metadata and re.match('^#\s[A-Z]\S+:', line):
-                cran_metadata += line
+                cran_metadata.append(line)
                 continue
             
             # Inject missing_dso_whitelist
             # NB: this can be removed if merge of https://github.com/conda/conda-build/pull/4786
             if re.match('^  rpaths:$', line):
                 is_rpaths = True
-                meta_new += line
+                meta_new.append(line)
                 continue
             elif is_rpaths:
                 if re.match('^\s+-.*', line):
-                    meta_new += line
+                    meta_new.append(line)
                     continue
                 else:
                     is_rpaths = False
-                    meta_new += "  missing_dso_whitelist:\n"
-                    meta_new += "    - '*/R.dll'        # [win]\n"
-                    meta_new += "    - '*/Rblas.dll'    # [win]\n"
-                    meta_new += "    - '*/Rlapack.dll'  # [win]\n"
+                    meta_new.append("  missing_dso_whitelist:\n")
+                    meta_new.append("    - '*/R.dll'        # [win]\n")
+                    meta_new.append("    - '*/Rblas.dll'    # [win]\n")
+                    meta_new.append("    - '*/Rlapack.dll'  # [win]\n")
                     continue
 
             # Remove blank lines
@@ -156,7 +156,56 @@ for fn in packages:
             # Space at beginning and end of jinja variable references
             line = re.sub('\{\{ *([^} ]+) *\}\}', '{{ \g<1> }}', line)
 
-            meta_new += line
+            meta_new.append(line)
+
+    # Ensure stdlib requirement is present when compilers are used
+    compilers = set()
+    stdlibs = set()
+    build_section_start = None
+    build_section_end = None
+    in_requirements = False
+    in_build_requirements = False
+    for idx, line in enumerate(meta_new):
+        stripped = line.lstrip()
+        if stripped.startswith('requirements:'):
+            in_requirements = True
+            in_build_requirements = False
+            continue
+        if not in_requirements:
+            continue
+        if stripped.startswith('build:'):
+            in_build_requirements = True
+            build_section_start = idx
+            continue
+        if in_build_requirements and re.match(r'^(host:|run:)', stripped):
+            build_section_end = idx
+            break
+        if in_build_requirements:
+            compiler_match = re.search(r"compiler\(['\"]([^'\"]+)['\"]\)", line)
+            if compiler_match:
+                compilers.add(compiler_match.group(1))
+            stdlib_match = re.search(r"stdlib\(['\"]([^'\"]+)['\"]\)", line)
+            if stdlib_match:
+                stdlibs.add(stdlib_match.group(1))
+
+    compiler_to_stdlib = {
+        'c': 'c',
+        'cxx': 'cxx',
+        'fortran': 'fortran',
+        'gfortran': 'fortran',
+        'm2w64_c': 'c',
+        'm2w64_cxx': 'cxx',
+        'm2w64_fortran': 'fortran',
+    }
+    needed_stdlibs = []
+    for lang in ['c', 'cxx', 'fortran']:
+        if any(compiler_to_stdlib.get(c) == lang for c in compilers) and lang not in stdlibs:
+            needed_stdlibs.append(lang)
+
+    if needed_stdlibs and build_section_start is not None:
+        insert_at = build_section_end if build_section_end is not None else build_section_start + 1
+        new_lines = ["    - {{ stdlib(\"%s\") }}\n" % lang for lang in needed_stdlibs]
+        meta_new[insert_at:insert_at] = new_lines
 
     # Add maintainers listed in extra.yaml
     with open('extra.yaml', 'r') as f:
