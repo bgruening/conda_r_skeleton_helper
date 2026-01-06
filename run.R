@@ -128,6 +128,61 @@ for (fn in packages) {
     }
   }
 
+  # Ensure stdlib requirement is present when compilers are used
+  compilers <- character()
+  stdlibs <- character()
+  build_section_start <- NA_integer_
+  build_section_end <- NA_integer_
+  in_requirements <- FALSE
+  in_build_requirements <- FALSE
+  for (i in seq_along(meta_new)) {
+    stripped <- str_trim(meta_new[i], side = "left")
+    if (str_detect(stripped, "^requirements:")) {
+      in_requirements <- TRUE
+      in_build_requirements <- FALSE
+      next
+    }
+    if (!in_requirements) next
+    if (str_detect(stripped, "^build:")) {
+      in_build_requirements <- TRUE
+      build_section_start <- i
+      next
+    }
+    if (in_build_requirements && str_detect(stripped, "^(host:|run:)")) {
+      build_section_end <- i
+      break
+    }
+    if (in_build_requirements) {
+      compiler_match <- str_match(meta_new[i], "compiler\\(['\"]([^'\"]+)['\"]\\)")
+      if (!is.na(compiler_match[1, 2])) {
+        compilers <- c(compilers, compiler_match[1, 2])
+      }
+      stdlib_match <- str_match(meta_new[i], "stdlib\\(['\"]([^'\"]+)['\"]\\)")
+      if (!is.na(stdlib_match[1, 2])) {
+        stdlibs <- c(stdlibs, stdlib_match[1, 2])
+      }
+    }
+  }
+
+  compiler_to_stdlib <- c(c = "c",
+                          cxx = "cxx",
+                          fortran = "fortran",
+                          gfortran = "fortran",
+                          m2w64_c = "c",
+                          m2w64_cxx = "cxx",
+                          m2w64_fortran = "fortran")
+  mapped_stdlibs <- compiler_to_stdlib[compilers]
+  mapped_stdlibs <- mapped_stdlibs[!is.na(mapped_stdlibs)]
+  needed_stdlibs <- setdiff(unique(mapped_stdlibs), unique(stdlibs))
+
+  if (length(needed_stdlibs) > 0 && !is.na(build_section_start)) {
+    insert_after <- ifelse(is.na(build_section_end),
+                           build_section_start,
+                           build_section_end - 1)
+    new_lines <- sprintf("    - {{ stdlib(\"%s\") }}", needed_stdlibs)
+    meta_new <- append(meta_new, values = new_lines, after = insert_after)
+  }
+
   # Add maintainers listed in extra.yaml
   maintainers <- readLines("extra.yaml")
   meta_new <- c(meta_new, maintainers)
